@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Loan Prediction</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f5f7fa;
+      --white: #ffffff;
+      --border: #e2e8f0;
+      --text: #1a202c;
+      --muted: #718096;
+      --accent: #3b6af5;
+      --accent-light: #ebf0ff;
+      --green: #16a34a;
+      --green-bg: #f0fdf4;
+      --green-border: #bbf7d0;
+      --red: #dc2626;
+      --red-bg: #fff5f5;
+      --red-border: #fecaca;
+      --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: var(--shadow);
+      position: sticky; top: 0; z-index: 50;
+    }
+
+    .logo {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+    .logo span { color: var(--accent); }
+
+    .accuracy-badges { display: flex; gap: 0.6rem; }
+    .badge {
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.25rem 0.7rem;
+      border-radius: 999px;
+      background: var(--accent-light);
+      color: var(--accent);
+      border: 1px solid #c7d7fd;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      text-align: center;
+      padding: 2.5rem 1rem 2rem;
+    }
+    .hero h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+    }
+    .hero h1 span { color: var(--accent); }
+    .hero p {
+      color: var(--muted);
+      font-size: 0.9rem;
+      max-width: 420px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* ── Container ── */
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 1.5rem 1.25rem 4rem;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.25rem;
+      box-shadow: var(--shadow);
+    }
+
+    .section-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* ── Presets ── */
+    .presets { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
+    .preset-btn {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 500;
+      padding: 0.4rem 0.9rem;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--white);
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .preset-btn:hover { background: var(--bg); border-color: #cbd5e0; color: var(--text); }
+    .preset-btn.good { border-color: var(--green-border); color: var(--green); background: var(--green-bg); }
+    .preset-btn.bad  { border-color: var(--red-border);   color: var(--red);   background: var(--red-bg); }
+
+    /* ── Form grid ── */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 1rem;
+    }
+
+    .field { display: flex; flex-direction: column; gap: 0.35rem; }
+
+    label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--muted);
+      letter-spacing: 0.03em;
+    }
+
+    input, select {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.875rem;
+      padding: 0.55rem 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      background: var(--white);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      width: 100%;
+    }
+    input:focus, select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(59,106,245,0.1);
+    }
+    input::placeholder { color: #cbd5e0; }
+
+    /* ── Submit ── */
+    .submit-wrap { display: flex; justify-content: center; margin-top: 1.5rem; }
+    .submit-btn {
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 0.95rem;
+      padding: 0.75rem 2.5rem;
+      border-radius: 8px;
+      border: none;
+      background: var(--accent);
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
+      box-shadow: 0 2px 8px rgba(59,106,245,0.3);
+    }
+    .submit-btn:hover { background: #2f5be0; box-shadow: 0 4px 12px rgba(59,106,245,0.4); }
+    .submit-btn:active { transform: scale(0.98); }
+    .submit-btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+
+    /* ── Results ── */
+    #results { display: none; }
+    .results-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+    .result-card {
+      border-radius: 10px;
+      padding: 1.25rem;
+      border: 1.5px solid;
+      text-align: center;
+      animation: fadeUp 0.3s ease forwards;
+      opacity: 0;
+    }
+    .result-card:nth-child(2) { animation-delay: 0.1s; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .result-card.approved { background: var(--green-bg); border-color: var(--green-border); }
+    .result-card.rejected { background: var(--red-bg);   border-color: var(--red-border); }
+
+    .model-name {
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.6rem;
+    }
+    .verdict {
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.3rem;
+    }
+    .verdict.approved { color: var(--green); }
+    .verdict.rejected { color: var(--red); }
+
+    .confidence { font-size: 0.8rem; color: var(--muted); }
+    .confidence strong { color: var(--text); }
+
+    .conf-bar-wrap {
+      margin-top: 0.75rem;
+      height: 4px;
+      background: #e2e8f0;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .conf-bar { height: 100%; border-radius: 999px; transition: width 0.7s ease; }
+    .approved .conf-bar { background: var(--green); }
+    .rejected .conf-bar { background: var(--red); }
+
+    /* ── Spinner ── */
+    .spinner {
+      display: inline-block;
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Error ── */
+    .error-box {
+      background: var(--red-bg);
+      border: 1px solid var(--red-border);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      color: var(--red);
+      font-size: 0.85rem;
+      display: none;
+      margin-top: 1rem;
+    }
+
+    /* ── Not ready ── */
+    .not-ready {
+      background: #fffbeb;
+      border: 1px solid #fcd34d;
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      color: #92400e;
+      font-size: 0.85rem;
+      margin-bottom: 1.25rem;
+      display: {% if not ready %}block{% else %}none{% endif %};
+    }
+
+    @media (max-width: 560px) {
+      .results-grid { grid-template-columns: 1fr; }
+      header { padding: 0 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Loan <span>Prediction</span></div>
+  <div class="accuracy-badges">
+    {% if model_accuracies %}
+      <div class="badge">LR {{ model_accuracies.lr }}%</div>
+      <div class="badge">DT {{ model_accuracies.dt }}%</div>
+    {% endif %}
+  </div>
+</header>
+
+<div class="hero">
+  <h1>Loan <span>Approval</span> Predictor</h1>
+  <p>Enter applicant details below. Two ML models will predict whether the loan will be approved or rejected.</p>
+</div>
+
+<div class="container">
+
+  <div class="not-ready">
+    ⚠ Dataset not found. Place <code>loan_approval_dataset.csv</code> in the app folder and restart.
+  </div>
+
+  <div class="card">
+    <div class="section-label">Quick Presets</div>
+    <div class="presets">
+      <button class="preset-btn good" onclick="loadPreset('approved')">✓ Strong Applicant</button>
+      <button class="preset-btn bad"  onclick="loadPreset('rejected')">✗ Weak Applicant</button>
+      <button class="preset-btn"      onclick="clearForm()">↺ Clear</button>
+    </div>
+
+    <div class="section-label">Applicant Details</div>
+    <div class="form-grid">
+      <div class="field">
+        <label>No. of Dependents</label>
+        <input type="number" id="no_of_dependents" min="0" max="10" placeholder="0" />
+      </div>
+      <div class="field">
+        <label>Education</label>
+        <select id="education">
+          <option value="">Select…</option>
+          <option value="Graduate">Graduate</option>
+          <option value="Not Graduate">Not Graduate</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Self Employed</label>
+        <select id="self_employed">
+          <option value="">Select…</option>
+          <option value="No">No</option>
+          <option value="Yes">Yes</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Annual Income (₹)</label>
+        <input type="number" id="income_annum" placeholder="e.g. 5000000" />
+      </div>
+      <div class="field">
+        <label>Loan Amount (₹)</label>
+        <input type="number" id="loan_amount" placeholder="e.g. 10000000" />
+      </div>
+      <div class="field">
+        <label>Loan Term (months)</label>
+        <input type="number" id="loan_term" min="1" max="360" placeholder="e.g. 12" />
+      </div>
+      <div class="field">
+        <label>CIBIL Score</label>
+        <input type="number" id="cibil_score" min="300" max="900" placeholder="300 – 900" />
+      </div>
+      <div class="field">
+        <label>Residential Assets (₹)</label>
+        <input type="number" id="residential_assets_value" placeholder="e.g. 10000000" />
+      </div>
+      <div class="field">
+        <label>Commercial Assets (₹)</label>
+        <input type="number" id="commercial_assets_value" placeholder="e.g. 5000000" />
+      </div>
+      <div class="field">
+        <label>Luxury Assets (₹)</label>
+        <input type="number" id="luxury_assets_value" placeholder="e.g. 8000000" />
+      </div>
+      <div class="field">
+        <label>Bank Asset Value (₹)</label>
+        <input type="number" id="bank_asset_value" placeholder="e.g. 3000000" />
+      </div>
+    </div>
+
+    <div class="submit-wrap">
+      <button class="submit-btn" id="predictBtn" onclick="predict()">Predict Loan Status</button>
+    </div>
+    <div class="error-box" id="errorBox"></div>
+  </div>
+
+  <!-- Results -->
+  <div id="results">
+    <div class="card">
+      <div class="section-label">Prediction Results</div>
+      <div class="results-grid">
+        <div class="result-card" id="lr-card">
+          <div class="model-name">Logistic Regression</div>
+          <div class="verdict" id="lr-verdict">—</div>
+          <div class="confidence">Confidence: <strong id="lr-conf">—</strong></div>
+          <div class="conf-bar-wrap"><div class="conf-bar" id="lr-bar" style="width:0%"></div></div>
+        </div>
+        <div class="result-card" id="dt-card">
+          <div class="model-name">Decision Tree</div>
+          <div class="verdict" id="dt-verdict">—</div>
+          <div class="confidence">Confidence: <strong id="dt-conf">—</strong></div>
+          <div class="conf-bar-wrap"><div class="conf-bar" id="dt-bar" style="width:0%"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const PRESETS = {
+    approved: {
+      no_of_dependents: 1, education: 'Graduate', self_employed: 'No',
+      income_annum: 9500000, loan_amount: 20000000, loan_term: 12,
+      cibil_score: 780, residential_assets_value: 15000000,
+      commercial_assets_value: 10000000, luxury_assets_value: 20000000,
+      bank_asset_value: 8000000
+    },
+    rejected: {
+      no_of_dependents: 5, education: 'Not Graduate', self_employed: 'Yes',
+      income_annum: 2000000, loan_amount: 35000000, loan_term: 20,
+      cibil_score: 350, residential_assets_value: 1000000,
+      commercial_assets_value: 500000, luxury_assets_value: 800000,
+      bank_asset_value: 300000
+    }
+  };
+
+  function loadPreset(type) {
+    const p = PRESETS[type];
+    for (const [k, v] of Object.entries(p)) {
+      const el = document.getElementById(k);
+      if (el) el.value = v;
+    }
+    document.getElementById('results').style.display = 'none';
+    document.getElementById('errorBox').style.display = 'none';
+  }
+
+  function clearForm() {
+    ['no_of_dependents','education','self_employed','income_annum','loan_amount',
+     'loan_term','cibil_score','residential_assets_value','commercial_assets_value',
+     'luxury_assets_value','bank_asset_value'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+    document.getElementById('results').style.display = 'none';
+    document.getElementById('errorBox').style.display = 'none';
+  }
+
+  async function predict() {
+    const fields = ['no_of_dependents','education','self_employed','income_annum',
+                    'loan_amount','loan_term','cibil_score','residential_assets_value',
+                    'commercial_assets_value','luxury_assets_value','bank_asset_value'];
+    const payload = {};
+    for (const id of fields) {
+      const val = document.getElementById(id).value;
+      if (val === '' || val === null) {
+        showError('Please fill in all fields before predicting.');
+        return;
+      }
+      payload[id] = val;
+    }
+
+    const btn = document.getElementById('predictBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>Analysing…';
+    document.getElementById('errorBox').style.display = 'none';
+    document.getElementById('results').style.display = 'none';
+
+    try {
+      const res = await fetch('/predict', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (!data.success) { showError(data.error || 'Prediction failed.'); return; }
+      renderResults(data.results);
+    } catch (e) {
+      showError('Network error: ' + e.message);
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = 'Predict Loan Status';
+    }
+  }
+
+  function renderResults(results) {
+    for (const [key, info] of Object.entries(results)) {
+      const cls = info.approved ? 'approved' : 'rejected';
+      const card = document.getElementById(key + '-card');
+      card.className = 'result-card ' + cls;
+      document.getElementById(key + '-verdict').className = 'verdict ' + cls;
+      document.getElementById(key + '-verdict').textContent = info.status;
+      document.getElementById(key + '-conf').textContent = info.confidence + '%';
+      const bar = document.getElementById(key + '-bar');
+      bar.style.width = '0%';
+      setTimeout(() => { bar.style.width = info.confidence + '%'; }, 80);
+    }
+    document.getElementById('results').style.display = 'block';
+    document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function showError(msg) {
+    const el = document.getElementById('errorBox');
+    el.textContent = '⚠ ' + msg;
+    el.style.display = 'block';
+  }
+</script>
+</body>
+</html>
